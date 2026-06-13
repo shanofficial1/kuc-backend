@@ -45,6 +45,8 @@ app.use(
   unlockRequestRouter
 );
 
+
+
 app.use((err, req, res, next) => {
   console.error("ERROR:", err);
 
@@ -57,8 +59,5 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3002;
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on ${PORT}`);
-});
-app.listen(process.env.PORT, "0.0.0.0", () => {
   console.log(`Server running on ${PORT}`);
 });
