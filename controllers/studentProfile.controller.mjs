@@ -783,7 +783,36 @@ export const getStudentProfile = async (req, res) => {
 };
 
 
+export const getStudentsByDepartment = async (req, res) => {
+  try {
+    const { department } = req.body;
 
+    if (!department) {
+      return res.status(400).json({
+        success: false,
+        message: "Department is required"
+      });
+    }
+
+    const students = await StudentProfile.find({
+      "academic_details.department": department
+    });
+
+    return res.status(200).json({
+      success: true,
+      count: students.length,
+      data: students
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 
 export const getMyRequests =
 async (req, res) => {

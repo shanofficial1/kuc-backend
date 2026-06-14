@@ -4,6 +4,7 @@ import upload from "../configs/multer.mjs";
 import {
   CreateOrUpdate,
   getStudentProfile,
+  getStudentsByDepartment,
   getMyRequests,
   getPendingRequests,
   getRequestById,
@@ -70,6 +71,10 @@ studentProfileRouter.post(
 
 studentProfileRouter.get("/profile", getStudentProfile);
 
+studentProfileRouter.post(
+  "/students-by-department",
+  getStudentsByDepartment
+); 
 
 studentProfileRouter.get(
   "/my-requests",
