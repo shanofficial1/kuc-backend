@@ -74,13 +74,11 @@ studentProfileRouter.get("/profile",authMiddleware, getStudentProfile);
 
 studentProfileRouter.post(
   "/by-department",
-  authMiddleware,
   getStudentsByDepartment
 ); 
 
 studentProfileRouter.get(
   "/all-students",
-  authMiddleware,
   getAllStudents
 );
 
