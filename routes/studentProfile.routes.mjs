@@ -72,7 +72,7 @@ studentProfileRouter.post(
 studentProfileRouter.get("/profile", getStudentProfile);
 
 studentProfileRouter.post(
-  "/students-by-department",
+  "/by-department",
   getStudentsByDepartment
 ); 
 
