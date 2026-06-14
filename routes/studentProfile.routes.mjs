@@ -68,7 +68,7 @@ studentProfileRouter.post(
 );
 
 
-studentProfileRouter.get("/profile", authMiddleware, getStudentProfile);
+studentProfileRouter.get("/profile", getStudentProfile);
 
 
 studentProfileRouter.get(
