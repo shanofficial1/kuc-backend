@@ -71,7 +71,7 @@ studentProfileRouter.post(
 
 studentProfileRouter.get("/profile", getStudentProfile);
 
-studentProfileRouter.post(
+studentProfileRouter.get(
   "/by-department",
   getStudentsByDepartment
 ); 
