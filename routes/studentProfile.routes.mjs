@@ -9,7 +9,8 @@ import {
   getPendingRequests,
   getRequestById,
   approveRequest,
-  rejectRequest
+  rejectRequest,
+  getAllStudents
 } from "../controllers/studentProfile.controller.mjs";
 
 const studentProfileRouter = Router();
@@ -69,12 +70,19 @@ studentProfileRouter.post(
 );
 
 
-studentProfileRouter.get("/profile", getStudentProfile);
+studentProfileRouter.get("/profile",authMiddleware, getStudentProfile);
 
 studentProfileRouter.post(
   "/by-department",
+  authMiddleware,
   getStudentsByDepartment
 ); 
+
+studentProfileRouter.get(
+  "/all-students",
+  authMiddleware,
+  getAllStudents
+);
 
 studentProfileRouter.get(
   "/my-requests",

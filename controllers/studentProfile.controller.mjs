@@ -750,14 +750,11 @@ console.log(
 
 export const getStudentProfile = async (req, res) => {
   try {
+    console.log("REQ.USER:", req.user);
 
-    // req.user comes from verifyToken middleware
     const userId = req.user._id;
-    
 
-    const profile = await StudentProfile.findOne({
-      userId: userId
-    });
+    const profile = await StudentProfile.findOne({ userId });
 
     if (!profile) {
       return res.status(404).json({
@@ -772,8 +769,7 @@ export const getStudentProfile = async (req, res) => {
     });
 
   } catch (error) {
-
-    console.error(error);
+    console.log(error);
 
     return res.status(500).json({
       success: false,
@@ -782,7 +778,25 @@ export const getStudentProfile = async (req, res) => {
   }
 };
 
+export const getAllStudents = async (req, res) => {
+  try {
+    const students = await StudentProfile.find();
 
+    return res.status(200).json({
+      success: true,
+      count: students.length,
+      data: students
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 export const getStudentsByDepartment = async (req, res) => {
   try {
     const { department } = req.body;
