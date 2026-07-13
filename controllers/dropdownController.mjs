@@ -1,4 +1,4 @@
-import Dropdown from "../models/dropdown.mjs";
+import Dropdown from "../models/Dropdown.mjs";
 
 export const getDropdowns = async (req, res) => {
   try {
