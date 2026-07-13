@@ -1,0 +1,104 @@
+warning: in the working copy of 'controllers/auth.controller.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'controllers/search.controller.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'controllers/studentProfile.controller.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'utils/verifyOTP.mjs', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/controllers/auth.controller.mjs b/controllers/auth.controller.mjs[m
+[1mindex 16a4e85..6745dfc 100644[m
+[1m--- a/controllers/auth.controller.mjs[m
+[1m+++ b/controllers/auth.controller.mjs[m
+[36m@@ -1,8 +1,8 @@[m
+[31m-import Users from "../models/Users.mjs";[m
+[32m+[m[32mimport Users from "../models/users.mjs";[m
+ import jwt from 'jsonwebtoken';[m
+ import bcrypt from "bcryptjs";[m
+ import { sendOTP } from "../utils/sendEmail.mjs";[m
+[31m-import StudentProfile from "../models/StudentProfile.mjs";[m
+[32m+[m[32mimport StudentProfile from "../models/studentProfile.mjs";[m
+ [m
+ export const register = async (req, res) => {[m
+   try {[m
+[1mdiff --git a/controllers/profileUpdateRequest.controller.mjs b/controllers/profileUpdateRequest.controller.mjs[m
+[1mindex 73e75ef..e255a73 100644[m
+[1m--- a/controllers/profileUpdateRequest.controller.mjs[m
+[1m+++ b/controllers/profileUpdateRequest.controller.mjs[m
+[36m@@ -1,6 +1,6 @@[m
+[31m-import ProfileUpdateRequest from "../models/ProfileUpdateRequest.mjs";[m
+[31m-import StudentProfile from "../models/StudentProfile.mjs";[m
+[31m-import Users from "../models/Users.mjs";[m
+[32m+[m[32mimport ProfileUpdateRequest from "../models/profileUpdateRequest.mjs";[m
+[32m+[m[32mimport StudentProfile from "../models/studentProfile.mjs";[m
+[32m+[m[32mimport Users from "../models/users.mjs";[m
+ import {sanitizeProfileSection,stripUndefinedDeep}from "../utils/profileDataSanitizer.mjs";[m
+ import DropdownRequest from "../models/dropdownRequest.mjs";[m
+ import { createNotification } from "../utils/createNotification.mjs";[m
+[1mdiff --git a/controllers/search.controller.mjs b/controllers/search.controller.mjs[m
+[1mindex 8e23f1f..1acc4ad 100644[m
+[1m--- a/controllers/search.controller.mjs[m
+[1m+++ b/controllers/search.controller.mjs[m
+[36m@@ -1,5 +1,5 @@[m
+[31m-import StudentProfile from "../models/StudentProfile.mjs";[m
+[31m-import Users from "../models/Users.mjs";[m
+[32m+[m[32mimport StudentProfile from "../models/studentProfile.mjs";[m
+[32m+[m[32mimport Users from "../models/users.mjs";[m
+ [m
+ [m
+ export const searchUser = async (req, res) => {[m
+[1mdiff --git a/controllers/studentProfile.controller.mjs b/controllers/studentProfile.controller.mjs[m
+[1mindex 9fea1b3..99175d8 100644[m
+[1m--- a/controllers/studentProfile.controller.mjs[m
+[1m+++ b/controllers/studentProfile.controller.mjs[m
+[36m@@ -1,7 +1,7 @@[m
+[31m-import StudentProfile from "../models/StudentProfile.mjs";[m
+[31m-import Users from "../models/Users.mjs";[m
+[32m+[m[32mimport StudentProfile from "../models/studentProfile.mjs";[m
+[32m+[m[32mimport Users from "../models/users.mjs";[m
+ import qs from "qs";[m
+[31m-import ProfileUpdateRequest from "../models/ProfileUpdateRequest.mjs";[m
+[32m+[m[32mimport ProfileUpdateRequest from "../models/profileUpdateRequest.mjs";[m
+ [m
+ import {[m
+   deepMerge[m
+[1mdiff --git a/controllers/unlockRequest.controller.mjs b/controllers/unlockRequest.controller.mjs[m
+[1mindex 0019fd7..1021074 100644[m
+[1m--- a/controllers/unlockRequest.controller.mjs[m
+[1m+++ b/controllers/unlockRequest.controller.mjs[m
+[36m@@ -1,6 +1,6 @@[m
+[31m-import UnlockRequest from "../models/UnlockRequest.mjs";[m
+[31m-import StudentProfile from "../models/StudentProfile.mjs";[m
+[31m-import Users from "../models/Users.mjs";[m
+[32m+[m[32mimport UnlockRequest from "../models/unlockRequest.mjs";[m
+[32m+[m[32mimport StudentProfile from "../models/studentProfile.mjs";[m
+[32m+[m[32mimport Users from "../models/users.mjs";[m
+ import {[m
+   isEmptyFileValue,[m
+   sanitizeProfileSection,[m
+[1mdiff --git a/controllers/unlockRequestHistory.controller.mjs b/controllers/unlockRequestHistory.controller.mjs[m
+[1mindex dfb2076..2aee264 100644[m
+[1m--- a/controllers/unlockRequestHistory.controller.mjs[m
+[1m+++ b/controllers/unlockRequestHistory.controller.mjs[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-import UnlockRequest from "../models/UnlockRequest.mjs";[m
+[32m+[m[32mimport UnlockRequest from "../models/unlockRequest.mjs";[m
+ [m
+ export const getUnlockRequestHistory = async (req, res) => {[m
+   try {[m
+[1mdiff --git a/controllers/users.controller.mjs b/controllers/users.controller.mjs[m
+[1mindex f42ea50..93580eb 100644[m
+[1m--- a/controllers/users.controller.mjs[m
+[1m+++ b/controllers/users.controller.mjs[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-import Users from "../models/Users.mjs";[m
+[32m+[m[32mimport Users from "../models/users.mjs";[m
+ [m
+ export const getCanEdit = async ([m
+   req,[m
+[1mdiff --git a/utils/verifyOTP.mjs b/utils/verifyOTP.mjs[m
+[1mindex 525f149..ac4d647 100644[m
+[1m--- a/utils/verifyOTP.mjs[m
+[1m+++ b/utils/verifyOTP.mjs[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-import Users from "../models/Users.mjs";[m
+[32m+[m[32mimport Users from "../models/users.mjs";[m
+ import bcrypt from "bcryptjs";[m
+ import jwt from "jsonwebtoken";[m
+ [m

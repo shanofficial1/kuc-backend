@@ -1,8 +1,8 @@
-import Users from "../models/Users.mjs";
+import Users from "../models/users.mjs";
 import jwt from 'jsonwebtoken';
 import bcrypt from "bcryptjs";
 import { sendOTP } from "../utils/sendEmail.mjs";
-import StudentProfile from "../models/StudentProfile.mjs";
+import StudentProfile from "../models/studentProfile.mjs";
 
 export const register = async (req, res) => {
   try {

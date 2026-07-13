@@ -1,5 +1,5 @@
-import StudentProfile from "../models/StudentProfile.mjs";
-import Users from "../models/Users.mjs";
+import StudentProfile from "../models/studentProfile.mjs";
+import Users from "../models/users.mjs";
 
 
 export const searchUser = async (req, res) => {

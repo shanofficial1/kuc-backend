@@ -1,4 +1,4 @@
-import UnlockRequest from "../models/UnlockRequest.mjs";
+import UnlockRequest from "../models/unlockRequest.mjs";
 
 export const getUnlockRequestHistory = async (req, res) => {
   try {

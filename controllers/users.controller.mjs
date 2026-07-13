@@ -1,4 +1,4 @@
-import Users from "../models/Users.mjs";
+import Users from "../models/users.mjs";
 
 export const getCanEdit = async (
   req,

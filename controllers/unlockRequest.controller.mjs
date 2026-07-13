@@ -1,6 +1,6 @@
-import UnlockRequest from "../models/UnlockRequest.mjs";
-import StudentProfile from "../models/StudentProfile.mjs";
-import Users from "../models/Users.mjs";
+import UnlockRequest from "../models/unlockRequest.mjs";
+import StudentProfile from "../models/studentProfile.mjs";
+import Users from "../models/users.mjs";
 import {
   isEmptyFileValue,
   sanitizeProfileSection,

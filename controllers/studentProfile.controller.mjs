@@ -1,7 +1,7 @@
-import StudentProfile from "../models/StudentProfile.mjs";
-import Users from "../models/Users.mjs";
+import StudentProfile from "../models/studentProfile.mjs";
+import Users from "../models/users.mjs";
 import qs from "qs";
-import ProfileUpdateRequest from "../models/ProfileUpdateRequest.mjs";
+import ProfileUpdateRequest from "../models/profileUpdateRequest.mjs";
 
 import {
   deepMerge
