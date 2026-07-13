@@ -1,4 +1,4 @@
-import Users from "../models/users.mjs";
+import Users from "../models/Users.mjs";
 import jwt from 'jsonwebtoken';
 import bcrypt from "bcryptjs";
 import { sendOTP } from "../utils/sendEmail.mjs";
