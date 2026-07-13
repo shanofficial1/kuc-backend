@@ -1,4 +1,4 @@
-import DropdownRequest from "../models/dropdownRequest.mjs";
+import DropdownRequest from "../models/DropdownRequest.mjs";
 import StudentProfile from "../models/studentProfile.mjs";
 import Dropdown from "../models/dropdown.mjs";
 import ProfileUpdateRequest from "../models/profileUpdateRequest.mjs";

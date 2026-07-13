@@ -2,7 +2,7 @@ import ProfileUpdateRequest from "../models/ProfileUpdateRequest.mjs";
 import StudentProfile from "../models/StudentProfile.mjs";
 import Users from "../models/Users.mjs";
 import {sanitizeProfileSection,stripUndefinedDeep}from "../utils/profileDataSanitizer.mjs";
-import DropdownRequest from "../models/dropdownRequest.mjs";
+import DropdownRequest from "../models/DropdownRequest.mjs";
 import { createNotification } from "../utils/createNotification.mjs";
 const FIELD_LABELS = {
   specialization: "Specialization / Research Area",
