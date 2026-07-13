@@ -924,6 +924,75 @@ async (req, res) => {
 };
 
 
+const isValidObjectId = (value) => {
+  return mongoose.Types.ObjectId.isValid(value);
+};
+
+const sectionToDbArrayPath = (section) => {
+  const map = {
+    academicRecords: "academicRecords", // placeholder (see below)
+    competitiveExams: "education_details.competitiveExams",
+    siblings: "family_details.siblings",
+    education: "education_details.education",
+    researchPublications: "professional_details.publications",
+    scholarships: null,
+    fellowships: null,
+    workExperience: "professional_details.experience",
+  };
+
+  return map[section] || null;
+};
+
+const applyDeletedRecords = ({ profile, deletedRecords }) => {
+  if (!Array.isArray(deletedRecords) || deletedRecords.length === 0) {
+    return { deletedCount: 0, invalid: [] };
+  }
+
+  let deletedCount = 0;
+  const invalid = [];
+
+  for (const item of deletedRecords) {
+    const { section, objectId } = item || {};
+    const dbPath = sectionToDbArrayPath(section);
+
+    if (!section || !objectId || !dbPath) {
+      invalid.push({ item, reason: "invalid_section_or_object" });
+      continue;
+    }
+
+    if (!isValidObjectId(objectId)) {
+      invalid.push({ item, reason: "invalid_objectId" });
+      continue;
+    }
+
+    const parts = dbPath.split(".");
+    const lastKey = parts[parts.length - 1];
+
+    let current = profile;
+    for (let i = 0; i < parts.length - 1; i++) {
+      current = current[parts[i]];
+      if (!current) break;
+    }
+
+    if (!current || !Array.isArray(current[lastKey])) {
+      invalid.push({ item, reason: "array_not_found" });
+      continue;
+    }
+
+    const before = current[lastKey].length;
+    current[lastKey] = current[lastKey].filter(
+      (rec) => String(rec?._id) !== String(objectId)
+    );
+    const after = current[lastKey].length;
+
+    if (after < before) {
+      deletedCount += before - after;
+    }
+  }
+
+  return { deletedCount, invalid };
+};
+
 export const approveRequest =
 async (req, res) => {
 
@@ -934,6 +1003,7 @@ async (req, res) => {
       .findById(
         req.params.id
       );
+
 
     if (!request) {
 
@@ -991,6 +1061,27 @@ async (req, res) => {
         )
       );
 
+    // =========================
+    // ✅ SOFT DELETE PROCESSING
+    // =========================
+    // Apply deletions only during approval (final commit)
+    const { deletedRecords } = sanitizedChanges || {};
+    const { deletedCount, invalid } = applyDeletedRecords({
+      profile: mergedData,
+      deletedRecords,
+    });
+
+    if (invalid.length) {
+      // Fail the approval for invalid payloads to avoid corrupting data.
+      return res.status(400).json({
+        success: false,
+        message: "Invalid deletedRecords payload",
+        invalid,
+        deletedCount,
+      });
+    }
+
+
     console.log(
       JSON.stringify(
         sanitizedChanges,
@@ -1010,6 +1101,29 @@ async (req, res) => {
 
     delete mergedData.__v;
 
+    // =========================
+    // ✅ AUDIT LOG (optional; only if schema has it)
+    // =========================
+    if (Array.isArray(mergedData.auditLog)) {
+      // already present as array
+    } else {
+      mergedData.auditLog = mergedData.auditLog || [];
+    }
+
+    const now = new Date();
+    if (Array.isArray(deletedRecords) && deletedRecords.length) {
+      for (const item of deletedRecords) {
+        if (!item?.section || !item?.objectId) continue;
+        mergedData.auditLog.push({
+          action: "delete",
+          section: item.section,
+          objectId: item.objectId,
+          studentId: String(request.studentId),
+          timestamp: now,
+        });
+      }
+    }
+
     await StudentProfile
       .findOneAndUpdate(
         {
@@ -1024,6 +1138,7 @@ async (req, res) => {
 
     request.status =
       "approved";
+
 
     request.reviewedAt =
       new Date();
@@ -1107,3 +1222,83 @@ async (req, res) => {
   }
 
 };
+
+
+export const deleteProfileRecord = async (req, res) => {
+    try {
+
+        const { section, recordId } = req.params;
+
+        const userId = req.user._id;
+console.log("SECTION:", req.params.section);
+console.log("RECORD ID:", req.params.recordId);
+
+       const sectionMap = {
+  education: "education_details.education",
+  competitiveExams: "education_details.competitiveExams",
+  siblings: "family_details.siblings",
+
+  publications: "professional_details.publications",
+  conferences: "professional_details.conferences",
+  experience: "professional_details.experience",
+  patents: "professional_details.patents",
+  membershipUrl: "professional_details.membershipUrl",
+};
+
+        const arrayPath = sectionMap[section];
+
+        if (!arrayPath) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid section."
+            });
+        }
+
+        const profile = await StudentProfile.findOne({ userId });
+
+        if (!profile) {
+            return res.status(404).json({
+                success: false,
+                message: "Profile not found."
+            });
+        }
+
+        console.log(
+  "Education IDs:",
+  profile.education_details.education.map(e => e._id.toString())
+);
+
+console.log(
+  "Competitive IDs:",
+  profile.education_details.competitiveExams.map(e => e._id.toString())
+);
+
+       const result = await StudentProfile.updateOne(
+    { userId },
+    {
+        $pull: {
+            [arrayPath]: {
+                _id: recordId,
+            },
+        },
+    }
+);
+
+console.log(result);
+        return res.status(200).json({
+            success: true,
+            message: "Record deleted successfully."
+        });
+
+    } catch (err) {
+
+        return res.status(500).json({
+            success: false,
+            message: err.message
+        });
+
+    }
+};
+
+
+

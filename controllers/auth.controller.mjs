@@ -23,44 +23,45 @@ export const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    // Create User
-    const user = await Users.create({
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      password: hashedPassword,
-      role: data.role || "student",
-    mustChangePassword: true
-
-    });
+        // Create User
+        const user = await Users.create({
+  name: data.name,
+  email: data.email,
+  phone: data.phone,
+  password: hashedPassword,
+  role: data.role || "student",
+  mustChangePassword: true,
+  canEdit: true
+});
 
     // Create Student Profile
-    await StudentProfile.create({
-      userId: user._id,
+  await StudentProfile.create({
+  userId: user._id,
 
-      academic_details: {
-        department: data.department
-      },
+  fullUnlockActive: true,
 
-      personal_details: {
-        fullName: data.name
-      },
+  academic_details: {
+    department: data.department
+  },
 
-      contact_details: {
-        personalEmail: data.email,
-        personalMobile: {
-          number: data.phone
-        }
-      },
+  personal_details: {
+    fullName: data.name
+  },
 
-      mentor_details: {
-        hodName: data.hodName,
-        hodEmail: data.hodEmail,
-        tutorName: data.tutorName,
-        tutorEmail: data.tutorEmail
-      }
-    });
+  contact_details: {
+    personalEmail: data.email,
+    personalMobile: {
+      number: data.phone
+    }
+  },
 
+  mentor_details: {
+    hodName: data.hodName,
+    hodEmail: data.hodEmail,
+    tutorName: data.tutorName,
+    tutorEmail: data.tutorEmail
+  }
+});
     return res.status(201).json({
       message: "User registration complete",
       user: {

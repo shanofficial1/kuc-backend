@@ -8,844 +8,447 @@ import {
 }
 from "../utils/profileDataSanitizer.mjs";
 
-export const createUnlockRequest =
-async (req, res) => {
-
+export const createUnlockRequest = async (req, res) => {
   try {
 
-    const userId =
-      req.user._id;
+    const userId = req.user._id;
+    const { reason = "" } = req.body;
 
-    const {
-      requestType,
-      correctionFields,
-      reason,
-      formData
-    } = req.body;
-
-    // ======================
-    // VALIDATE TYPE
-    // ======================
-
-    if (
-      ![
-        "field_correction",
-        "full_unlock"
-      ].includes(requestType)
-    ) {
-
-      return res.status(400).json({
-        message:
-          "Invalid request type"
-      });
-
-    }
-
-    // ======================
-    // USER
-    // ======================
-
-    const user =
-      await Users.findById(
-        userId
-      );
+    // Check user
+    const user = await Users.findById(userId);
 
     if (!user) {
-
       return res.status(404).json({
-        message:
-          "User not found"
+        success: false,
+        message: "User not found",
       });
-
     }
 
-    // ======================
-    // FIELD CORRECTION
-    // ======================
-
-    if (
-      requestType ===
-      "field_correction"
-    ) {
-
-   
-
-   if (
-  requestType ===
-  "field_correction"
-) {
-
-  if (
-    !correctionFields ||
-    correctionFields.length === 0
-  ) {
-
-    return res.status(400).json({
-
-      message:
-        "At least one field is required"
-
+    // Check profile
+    const profile = await StudentProfile.findOne({
+      userId,
     });
 
-  }
+    console.log("========== CREATE PROFILE UPDATE ==========");
+console.log("User ID:", userId.toString());
+console.log("Profile User ID:", profile.userId.toString());
+console.log("fullUnlockActive:", profile.fullUnlockActive);
+console.log("canEdit:", user.canEdit);
 
-  if (
-    correctionFields.length > 5
-  ) {
 
-    return res.status(400).json({
-
-      message:
-        "Maximum 5 fields allowed in one request"
-
-    });
-
-  }
-
-}
-
-    }
-
-    // ======================
-    // FULL UNLOCK
-    // ======================
-
-if (
-  requestType ===
-  "full_unlock"
-) {
-
-  const pendingUnlock =
-  await UnlockRequest.findOne({
-
-    studentId: userId,
-
-    requestType:
-      "full_unlock",
-
-    status:
-      "pending"
-
-  });
-
-
-  if (
-    pendingUnlock
-  ) {
-
-    return res.status(400)
-    .json({
-
-      message:
-        "You already have a pending full unlock request"
-
-    });
-
-  }
-
-}
-
-if (
-  requestType ===
-  "field_correction"
-) {
-
-  const pendingCount =
-  await UnlockRequest.countDocuments({
-
-    studentId: userId,
-
-    requestType:
-      "field_correction",
-
-    status:
-      "pending"
-
-  });
-
-  if (
-    pendingCount >= 5
-  ) {
-
-    return res.status(400)
-    .json({
-
-      message:
-        "Maximum 5 pending correction requests allowed"
-
-    });
-
-  }
-
-}
-    // ======================
-    // CREATE REQUEST
-    // ======================
-
-const request =
-await UnlockRequest.create({
-
-  studentId:
-    userId,
-
-  requestNo:
-    `UNLOCK-${Date.now()}`,
-
-  requestType,
-
-  correctionFields:
-    correctionFields || [],
-
-  formData:
-    formData || {},
-
-  reason:
-    reason || "",
-
-  status:
-    "pending"
-
-});
-await Users.findByIdAndUpdate(
-
-  userId,
-
-  {
-    canEdit: false
-  }
-
-);
-return res.status(201).json({
-
-  success: true,
-
-  message:
-    "Request submitted successfully",
-
-  request
-
-});
-
-  } catch (err) {
-
-    console.log(err);
-
-    return res.status(500).json({
-
-      message:
-        err.message
-
-    });
-
-  }
-
-};
-
-
-
-export const getMyUnlockRequests =
-async (req, res) => {
-
-  try {
-
-    const requests =
-    await UnlockRequest.find({
-
-      studentId: req.user._id
-
-    })
-    .sort({
-      createdAt: -1
-    });
-
-    return res.json(requests);
-
-  } catch (err) {
-
-    return res.status(500).json({
-      message: err.message
-    });
-
-  }
-
-};
-
-
-
-export const getPendingUnlockRequests =
-async (req, res) => {
-
-  try {
-
-    const requests =
-    await UnlockRequest.find({
-
-      status: "pending"
-
-    })
-    .populate(
-      "studentId",
-      "name email"
-    )
-    .sort({
-      createdAt: -1
-    });
-
-    return res.json(requests);
-
-  } catch (err) {
-
-    return res.status(500).json({
-      message: err.message
-    });
-
-  }
-
-};
-
-
-
-
-export const getUnlockRequestById =
-async (req, res) => {
-
-  try {
-
-    const request =
-    await UnlockRequest.findById(
-      req.params.id
-    )
-    .populate(
-      "studentId",
-      "name email"
-    );
-
-    if (!request) {
-
+    if (!profile) {
       return res.status(404).json({
-        message:
-          "Request not found"
+        success: false,
+        message: "Profile not found",
       });
-
     }
 
-    return res.json(request);
-
-  } catch (err) {
-
-    return res.status(500).json({
-      message: err.message
-    });
-
-  }
-
-};
-
-
-
-export const approveUnlockRequest =
-async (req, res) => {
-
-  try {
-
-    const request =
-      await UnlockRequest.findById(
-        req.params.id
-      );
-
-    if (!request) {
-
-      return res.status(404).json({
-        message:
-          "Request not found"
-      });
-
-    }
-
-    if (
-      request.status !==
-      "pending"
-    ) {
-
+    // Already active?
+    if (profile.fullUnlockActive) {
       return res.status(400).json({
-        message:
-          "Request already processed"
+        success: false,
+        message: "A full unlock request is already active.",
       });
-
     }
 
-    // ======================
-    // FULL UNLOCK
-    // ======================
+    // Activate unlock workflow
+    profile.fullUnlockActive = true;
 
-// ======================
-// FULL UNLOCK
-// ======================
+    await profile.save();
 
-if (
-  request.requestType ===
-  "full_unlock"
-) {
+    // Student cannot edit until HOD approves
+    await Users.findByIdAndUpdate(
+      userId,
+      {
+        canEdit: false,
+      }
+    );
 
-  const profile =
-  await StudentProfile.findOne({
+    // Create unlock request
+    const request = await UnlockRequest.create({
 
-    userId:
-      request.studentId
+      studentId: userId,
 
-  });
+      requestNo: `UNLOCK-${Date.now()}`,
 
-  if (!profile) {
+      reason,
 
-    return res.status(404).json({
-      message:
-        "Profile not found"
+      status: "pending",
+
+    });
+
+    return res.status(201).json({
+
+      success: true,
+
+      message: "Unlock request submitted successfully.",
+
+      request,
+
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message,
     });
 
   }
+};
 
-  const sectionMap = {
+export const getMyUnlockRequests = async (req, res) => {
+  try {
 
-    personal:
-      "personal_details",
+    const userId = req.user._id;
 
-    academic:
-      "academic_details",
+    const profile = await StudentProfile.findOne({
+      userId,
+    });
 
-    contact:
-      "contact_details",
-
-    family:
-      "family_details",
-
-    education:
-      "education_details",
-
-    financial:
-      "financial_details",
-
-    health:
-      "health_details",
-
-    professional:
-      "professional_details",
-
-    residential:
-      "residential_details",
-
-    documents:
-      "documents_details"
-
-  };
-const updateData = {};
-
-Object.entries(
-  request.formData || {}
-).forEach(
-
-  ([section, data]) => {
-
-    const dbSection =
-      sectionMap[section];
-
-    if (
-      !dbSection ||
-      !data
-    ) {
-      return;
+    if (!profile) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found",
+      });
     }
 
-    const cleanedData =
-      sanitizeProfileSection(
-        dbSection,
-        data
-      );
+    const requests = await UnlockRequest.find({
+      studentId: userId,
+    }).sort({
+      createdAt: -1,
+    });
 
-    if (
-      Object.keys(cleanedData).length ===
-      0
-    ) {
-      return;
-    }
+    return res.status(200).json({
 
-    const existingSection =
-      profile[dbSection]?.toObject?.() ||
-      profile[dbSection] ||
-      {};
+      success: true,
 
-    const mergedSection =
-      sanitizeProfileSection(
-        dbSection,
-        {
-          ...stripUndefinedDeep(existingSection),
-          ...cleanedData
-        }
-      );
+      fullUnlockActive: profile.fullUnlockActive,
 
-    profile.set(
-      dbSection,
-      mergedSection
-    );
+      canEdit: (
+        await Users.findById(userId)
+          .select("canEdit")
+      )?.canEdit || false,
 
-    updateData[dbSection] =
-      cleanedData;
+      requests,
+
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
 
   }
+};
 
-);
+export const getPendingUnlockRequests = async (req, res) => {
+  try {
 
-console.log(
-  JSON.stringify(
-    updateData,
-    null,
-    2
-  )
-);
+    const requests = await UnlockRequest.find({
+      status: "pending",
+    })
+      .populate(
+        "studentId",
+        "name email"
+      )
+      .sort({
+        createdAt: -1,
+      });
 
-console.log(
-  "fellowshipLetter:",
-  updateData
-    ?.academic_details
-    ?.fellowshipLetter
-);
+    return res.status(200).json({
+
+      success: true,
+
+      count: requests.length,
+
+      requests,
+
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    return res.status(500).json({
+
+      success: false,
+
+      message: err.message,
+
+    });
+
+  }
+};
+
+
+
+export const getUnlockRequestById = async (req, res) => {
+  try {
+
+    const request = await UnlockRequest.findById(req.params.id)
+      .populate(
+        "studentId",
+        "name email"
+      );
+
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: "Unlock request not found",
+      });
+    }
+
+    return res.status(200).json({
+
+      success: true,
+
+      request,
+
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    return res.status(500).json({
+
+      success: false,
+
+      message: err.message,
+
+    });
+
+  }
+};
+
+
+export const approveUnlockRequest = async (req, res) => {
+  try {
+
+    const request = await UnlockRequest.findById(req.params.id);
+
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: "Unlock request not found",
+      });
+    }
+
+    if (request.status !== "pending") {
+      return res.status(400).json({
+        success: false,
+        message: "Request already processed",
+      });
+    }
+
+    const profile = await StudentProfile.findOne({
+      userId: request.studentId,
+    });
+
+    if (!profile) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found",
+      });
+    }
+
+    // =====================================
+    // ENABLE FULL UNLOCK
+    // =====================================
+
+profile.fullUnlockActive = true;
+
+console.log("Before save:", profile.fullUnlockActive);
 
 await profile.save();
 
- 
-
-}
-    // ======================
-    // FIELD CORRECTION
-    // ======================
-
-    if (
-      request.requestType ===
-      "field_correction"
-    ) {
-
-      const profile =
-      await StudentProfile.findOne({
-
-        userId:
-          request.studentId
-
-      });
-
-      if (!profile) {
-
-        return res.status(404).json({
-          message:
-            "Profile not found"
-        });
-
-      }
-
-      const sectionMap = {
-
-  personal: "personal_details",
-
-  academic: "academic_details",
-
-  contact: "contact_details",
-
-  health: "health_details",
-
-  family: "family_details",
-
-  education: "education_details",
-
-  financial: "financial_details",
-
-  professional: "professional_details",
-
-  residential: "residential_details"
-
-};
-
-const updateData = {};
-
-     request.correctionFields
-.forEach(field => {
-
-  const section =
-    sectionMap[
-      field.section
-    ];
-
-  const key =
-    field.field;
-
-  const value =
-    field.requestedValue;
-
-  if (
-    !section ||
-    value === undefined ||
-    (
-      section === "academic_details" &&
-      key === "fellowshipLetter" &&
-      isEmptyFileValue(value)
-    )
-  ) {
-    return;
-  }
-
-  if (
-    profile[section]
-  ) {
-
-    profile[section][key] =
-      stripUndefinedDeep(value);
-
-    if (!updateData[section]) {
-      updateData[section] = {};
-    }
-
-    updateData[section][key] =
-      stripUndefinedDeep(value);
-
-  }
-
+const updatedProfile = await StudentProfile.findOne({
+  userId: request.studentId,
 });
 
-console.log(
-  JSON.stringify(
-    request.formData,
-    null,
-    2
-  )
-);
+console.log("After save:", updatedProfile.fullUnlockActive);
+    // =====================================
+    // ENABLE PROFILE EDITING
+    // =====================================
 
-console.log(
-  "FORM DATA",
-  JSON.stringify(
-    request.formData,
-    null,
-    2
-  )
-);
-
-console.log(
-  "ACADEMIC",
-  JSON.stringify(
-    profile.academic_details,
-    null,
-    2
-  )
-);
-
-console.log(
-  JSON.stringify(
-    updateData,
-    null,
-    2
-  )
-);
-
-console.log(
-  "fellowshipLetter:",
-  updateData
-    ?.academic_details
-    ?.fellowshipLetter
-);
-
-Object.keys(updateData).forEach((section) => {
-
-  const cleanSection =
-    sanitizeProfileSection(
-      section,
-      profile[section]?.toObject?.() ||
-      profile[section] ||
-      {}
+    await Users.findByIdAndUpdate(
+      request.studentId,
+      {
+        canEdit: true,
+      }
     );
 
-  profile.set(
-    section,
-    cleanSection
-  );
+    // =====================================
+    // APPROVE REQUEST
+    // =====================================
 
-});
-      await profile.save();
+    request.status = "approved";
 
-    }
+    // Temporary dummy admin ID
+    request.reviewedBy = "507f1f77bcf86cd799439011";
 
-    request.status =
-      "approved";
-
-    request.reviewedBy =
-      req.user._id;
-
-    request.reviewedAt =
-      new Date();
+    request.reviewedAt = new Date();
 
     await request.save();
 
-    return res.json({
-
+    return res.status(200).json({
       success: true,
-
-      message:
-        "Request approved"
-
+      message: "Unlock request approved successfully.",
     });
 
   } catch (err) {
 
+    console.error(err);
+
     return res.status(500).json({
-      message:
-        err.message
+      success: false,
+      message: err.message,
     });
 
   }
-
 };
 
-export const rejectUnlockRequest =
-async (req, res) => {
-
+export const rejectUnlockRequest = async (req, res) => {
   try {
 
-    const {
-      reason
-    } = req.body;
+    const { reason = "" } = req.body;
 
-    const request =
-      await UnlockRequest.findById(
-        req.params.id
-      );
+    const request = await UnlockRequest.findById(req.params.id);
 
     if (!request) {
-
       return res.status(404).json({
-        message:
-          "Request not found"
+        success: false,
+        message: "Unlock request not found",
       });
-
     }
 
-    request.status =
-      "rejected";
+    if (request.status !== "pending") {
+      return res.status(400).json({
+        success: false,
+        message: "Request already processed",
+      });
+    }
 
-    request.reviewedBy =
-      req.user._id;
+    const profile = await StudentProfile.findOne({
+      userId: request.studentId,
+    });
 
-    request.reviewedAt =
-      new Date();
+    if (!profile) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found",
+      });
+    }
 
-    request.remarks =
-      reason;
+    // =====================================
+    // REJECT FULL UNLOCK
+    // =====================================
+
+    profile.fullUnlockActive = false;
+
+    await profile.save();
+
+    await Users.findByIdAndUpdate(
+      request.studentId,
+      {
+        canEdit: false,
+      }
+    );
+
+    request.status = "rejected";
+
+    request.remarks = reason;
+
+    request.reviewedBy = req.user._id;
+
+    request.reviewedAt = new Date();
 
     await request.save();
 
-    return res.json({
+    return res.status(200).json({
+      success: true,
+      message: "Unlock request rejected successfully.",
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+
+  }
+};
+
+
+
+export const getEligibility = async (req, res) => {
+  try {
+
+    const userId = req.user._id;
+
+    const profile = await StudentProfile.findOne({
+      userId,
+    });
+
+    if (!profile) {
+      return res.status(404).json({
+        success: false,
+        message: "Profile not found",
+      });
+    }
+
+    const user = await Users.findById(userId)
+      .select("canEdit");
+
+    const maxSlots = 5;
+
+    const pendingCorrections =
+      profile.fieldCorrectionCount || 0;
+
+    const availableSlots =
+      Math.max(0, maxSlots - pendingCorrections);
+
+    return res.status(200).json({
 
       success: true,
 
-      message:
-        "Request rejected"
+      // Full Unlock
+      fullUnlockActive: profile.fullUnlockActive,
+
+      canEdit: user?.canEdit || false,
+
+      canRequestFullUnlock: !profile.fullUnlockActive,
+
+      // Field Correction
+      pendingCorrections,
+
+      availableSlots,
+
+      maxSlots,
+
+      canRequestFieldCorrection:
+        availableSlots > 0,
 
     });
 
   } catch (err) {
 
+    console.error(err);
+
     return res.status(500).json({
-      message:
-        err.message
+      success: false,
+      message: err.message,
     });
 
   }
-
 };
-
-
-export const getEligibility =
-async (req, res) => {
-
-  try {
-
-    const userId =
-      req.user._id;
-
-    const user =
-      await Users.findById(
-        userId
-      );
-
-    if (!user) {
-
-      return res.status(404).json({
-        message:
-          "User not found"
-      });
-
-    }
-
-const requests =
-await UnlockRequest.find({
-
-  studentId: userId,
-
-  requestType:
-    "field_correction"
-
-});
-
-const totalFieldsUsed =
-requests.reduce(
-
-  (total, request) =>
-
-    total +
-    (request.correctionFields?.length || 0),
-
-  0
-
-);
-
-
-    const pendingUnlock =
-    await UnlockRequest.findOne({
-
-      studentId:
-        userId,
-
-      requestType:
-        "full_unlock",
-
-      status:
-        "pending"
-
-    });
-
-return res.json({
-
-  totalFieldsUsed,
-
-  remainingFields:
-    Math.max(
-      0,
-      5 - totalFieldsUsed
-    ),
-
-  canCreateCorrection:
-    totalFieldsUsed < 5,
-
-  pendingUnlock:
-    !!pendingUnlock,
-
-  canRequestFullUnlock:
-    totalFieldsUsed >= 5 &&
-    !pendingUnlock
-
-});
-  } catch (err) {
-
-    return res.status(500).json({
-      message:
-        err.message
-    });
-
-  }
-
-};
-  

@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
-const unlockRequestSchema =
-new mongoose.Schema({
+const unlockRequestSchema = new mongoose.Schema({
 
   studentId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -14,34 +13,6 @@ new mongoose.Schema({
     required: true
   },
 
-
-
-  requestType: {
-    type: String,
-    enum: [
-      "field_correction",
-      "full_unlock"
-    ],
-    required: true
-  },
-
-  correctionFields: [
-    {
-      section: String,
-
-      field: String,
-
-      currentValue:
-        mongoose.Schema.Types.Mixed,
-
-      requestedValue:
-        mongoose.Schema.Types.Mixed
-    }
-  ],
-formData: {
-  type: Object,
-  default: {}
-},
   reason: {
     type: String,
     default: ""
@@ -67,13 +38,19 @@ formData: {
     ref: "User"
   },
 
-  reviewedAt: Date
+  reviewedAt: {
+    type: Date
+  }
 
 },{
   timestamps: true
 });
 
-export default mongoose.model(
-  "UnlockRequest",
-  unlockRequestSchema
-);
+const UnlockRequest =
+  mongoose.models.UnlockRequest ||
+  mongoose.model(
+    "UnlockRequest",
+    unlockRequestSchema
+  );
+
+export default UnlockRequest;

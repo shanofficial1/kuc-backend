@@ -2,9 +2,14 @@ import fs from "fs";
 import path from "path";
 import { execFile } from "child_process";
 
-const gsPath =
-  "C:\\Program Files (x86)\\gs\\gs10.07.1\\bin\\gswin32c.exe";
+// const gsPath =
+//   "C:\\Program Files (x86)\\gs\\gs10.07.1\\bin\\gswin32c.exe";
 
+const gsPath =
+process.platform === "win32"
+  ? "C:\\Program Files (x86)\\gs\\gs10.07.1\\bin\\gswin32c.exe"
+  : "gs";
+  
 console.log("GS PATH =", gsPath);
 
 const compressPdfFile = (

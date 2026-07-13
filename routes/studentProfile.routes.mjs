@@ -10,7 +10,8 @@ import {
   getRequestById,
   approveRequest,
   rejectRequest,
-  getAllStudents
+  getAllStudents,
+  deleteProfileRecord
 } from "../controllers/studentProfile.controller.mjs";
 
 const studentProfileRouter = Router();
@@ -71,7 +72,12 @@ studentProfileRouter.post(
 
 
 studentProfileRouter.get("/profile",authMiddleware, getStudentProfile);
-
+ 
+studentProfileRouter.delete(
+  "/record/:section/:recordId",
+  authMiddleware,
+  deleteProfileRecord
+);
 studentProfileRouter.post(
   "/by-department",
   getStudentsByDepartment
