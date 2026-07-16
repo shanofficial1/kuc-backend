@@ -310,8 +310,7 @@ console.log("After save:", updatedProfile.fullUnlockActive);
   message:
     "Your unlock request has been approved. You can now edit your profile and submit the updated information.",
 
-  type: "unlock_approved",
-
+type: "approved",
   unlockRequestId: request._id,
 });
     return res.status(200).json({
@@ -397,7 +396,7 @@ export const rejectUnlockRequest = async (req, res) => {
     ? `Your unlock request has been rejected. Reason: ${remarks}`
     : "Your unlock request has been rejected.",
 
-  type: "unlock_rejected",
+ type: "rejected",
 
   unlockRequestId: request._id,
 });
