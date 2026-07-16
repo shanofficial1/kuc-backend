@@ -1,6 +1,8 @@
 import UnlockRequest from "../models/unlockRequest.mjs";
 import StudentProfile from "../models/studentProfile.mjs";
 import Users from "../models/users.mjs";
+import { createNotification } from "../utils/createNotification.mjs";
+
 import {
   isEmptyFileValue,
   sanitizeProfileSection,
