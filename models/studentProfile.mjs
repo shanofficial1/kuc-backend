@@ -376,36 +376,83 @@ education_details: {
     },
   },
 },
-    financial_details: {
+   financial_details: {
+
+  // =====================
+  // Scholarships
+  // =====================
+  scholarships: [
+    {
       schType: String,
       schOther: String,
       schId: String,
+
       feeWaiveUrl: {
-        document: { url: String, name: String },
+        document: {
+          url: String,
+          name: String,
+        },
       },
+    },
+  ],
+
+  // =====================
+  // Grants
+  // =====================
+  grants: [
+    {
       grantType: String,
       grantOther: String,
       grantId: String,
+
       grantWaiveUrl: {
-        document: { url: String, name: String },
-      },
-      educationLoan: { bankName: String, amount: Number },
-      bankAccount: {
-        accountHolderName: String,
-        accountNumber: String,
-        bankName: String,
-        branchName: String,
-        ifscCode: String,
-      },
-      loan: { bankName: String, branch: String, amount: String },
-      pan: {
-        type: String,
-        uppercase: true,
-        match: [/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
-          "Invalid PAN format"],
+        document: {
+          url: String,
+          name: String,
+        },
       },
     },
+  ],
 
+  // =====================
+  // Education Loan
+  // =====================
+  educationLoan: {
+    bankName: String,
+    amount: Number,
+  },
+
+  // =====================
+  // Bank Account
+  // =====================
+  bankAccount: {
+    accountHolderName: String,
+    accountNumber: String,
+    bankName: String,
+    branchName: String,
+    ifscCode: String,
+  },
+
+  // Optional (if required)
+  loan: {
+    bankName: String,
+    branch: String,
+    amount: String,
+  },
+
+  // =====================
+  // PAN
+  // =====================
+  pan: {
+    type: String,
+    uppercase: true,
+    match: [
+      /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+      "Invalid PAN format",
+    ],
+  },
+
+},
     professional_details: {
       publications: [
         {

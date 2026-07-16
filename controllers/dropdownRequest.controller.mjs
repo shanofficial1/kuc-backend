@@ -356,18 +356,20 @@ async(req,res)=>{
 
     try{
 
-        const requests=
-        await DropdownRequest
-        .find({
+    const requests =
+await DropdownRequest
+.find({
 
-            status:"pending",
+    status: "pending",
 
-        })
-        .sort({
+    department: req.user.department,
 
-            createdAt:-1,
+})
+.sort({
 
-        });
+    createdAt: -1,
+
+});
 
         res.json({
 

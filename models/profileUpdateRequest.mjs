@@ -8,6 +8,12 @@ const profileUpdateRequestSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    department: {
+  type: String,
+  required: true,
+  trim: true,
+  index: true,
+},
 
     requestNo: {
       type: String,
@@ -58,6 +64,11 @@ const profileUpdateRequestSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+profileUpdateRequestSchema.index({
+  department: 1,
+  status: 1,
+});
 
 const ProfileUpdateRequest =
   mongoose.models.ProfileUpdateRequest ||

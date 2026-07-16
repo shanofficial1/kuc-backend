@@ -297,7 +297,18 @@ console.log("After save:", updatedProfile.fullUnlockActive);
     request.reviewedAt = new Date();
 
     await request.save();
+    await createNotification({
+  studentId: request.studentId,
 
+  title: "Profile Editing Enabled",
+
+  message:
+    "Your unlock request has been approved. You can now edit your profile and submit the updated information.",
+
+  type: "unlock_approved",
+
+  unlockRequestId: request._id,
+});
     return res.status(200).json({
       success: true,
       message: "Unlock request approved successfully.",
@@ -371,6 +382,20 @@ export const rejectUnlockRequest = async (req, res) => {
     request.reviewedAt = new Date();
 
     await request.save();
+
+    await createNotification({
+  studentId: request.studentId,
+
+  title: "Unlock Request Rejected",
+
+  message: remarks
+    ? `Your unlock request has been rejected. Reason: ${remarks}`
+    : "Your unlock request has been rejected.",
+
+  type: "unlock_rejected",
+
+  unlockRequestId: request._id,
+});
 
     return res.status(200).json({
       success: true,

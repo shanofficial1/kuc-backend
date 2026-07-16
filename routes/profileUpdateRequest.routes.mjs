@@ -38,7 +38,6 @@ router.get(
 // View All Pending Requests
 router.get(
   "/pending",
-  authMiddleware,
   getPendingProfileUpdateRequests
 );
 

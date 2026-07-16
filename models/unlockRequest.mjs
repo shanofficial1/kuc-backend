@@ -7,7 +7,12 @@ const unlockRequestSchema = new mongoose.Schema({
     ref: "User",
     required: true
   },
-
+department: {
+  type: String,
+  required: true,
+  trim: true,
+  index: true,
+},
   requestNo: {
     type: String,
     required: true
@@ -44,6 +49,11 @@ const unlockRequestSchema = new mongoose.Schema({
 
 },{
   timestamps: true
+});
+
+unlockRequestSchema.index({
+  department: 1,
+  status: 1,
 });
 
 const UnlockRequest =

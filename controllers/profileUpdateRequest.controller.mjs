@@ -140,22 +140,24 @@ if (updateType === "full_profile") {
     // CREATE REQUEST
     // =====================================
 
-    const request = await ProfileUpdateRequest.create({
+const request = await ProfileUpdateRequest.create({
 
-      studentId: userId,
+  studentId: userId,
 
-      requestNo,
+  department:
+    profile.academic_details?.department || "",
 
-      updateType,
+  requestNo,
 
-      changes,
+  updateType,
 
-      remarks,
+  changes,
 
-      status: "pending",
+  remarks,
 
-    });
+  status: "pending",
 
+});
 
     // =====================================
 // CREATE DROPDOWN REQUESTS
@@ -713,60 +715,52 @@ export const getMyProfileUpdateRequests = async (req, res) => {
 export const getPendingProfileUpdateRequests = async (req, res) => {
   try {
 
-    const requests = await ProfileUpdateRequest.find({
+    const { department } = req.body;
+
+    const filter = {
       status: "pending",
-    })
-      .populate(
-        "studentId",
-        "name email"
-      )
+    };
+
+    // Filter only if department is provided
+    if (department) {
+      filter.department = department;
+    }
+
+    const requests = await ProfileUpdateRequest.find(filter)
+      .populate("studentId", "name email")
       .sort({
         createdAt: -1,
       });
 
     const data = await Promise.all(
-
       requests.map(async (request) => {
 
-        const dropdownRequests =
-          await DropdownRequest.find({
-            profileRequestId: request._id,
-          })
-          .select(
-            "section fieldKey fieldLabel requestedValue approvedValue status"
-          );
+        const dropdownRequests = await DropdownRequest.find({
+          profileRequestId: request._id,
+        }).select(
+          "section fieldKey fieldLabel requestedValue approvedValue status"
+        );
 
         return {
           ...request.toObject(),
           dropdownRequests,
         };
-
       })
-
     );
 
     return res.status(200).json({
-
       success: true,
-
       count: data.length,
-
       requests: data,
-
     });
 
   } catch (err) {
-
     console.error(err);
 
     return res.status(500).json({
-
       success: false,
-
       message: err.message,
-
     });
-
   }
 };
 

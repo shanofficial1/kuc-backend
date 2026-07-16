@@ -9,6 +9,10 @@ const dropdownRequestSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    department: {
+  type: String,
+  trim: true,
+},
 
     // Linked Profile Update Request
     profileRequestId: {
@@ -114,6 +118,11 @@ const dropdownRequestSchema = new mongoose.Schema(
 dropdownRequestSchema.index({
   studentId: 1,
   fieldKey: 1,
+  status: 1,
+});
+
+dropdownRequestSchema.index({
+  department: 1,
   status: 1,
 });
 

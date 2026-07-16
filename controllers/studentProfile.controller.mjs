@@ -1243,6 +1243,8 @@ console.log("RECORD ID:", req.params.recordId);
   experience: "professional_details.experience",
   patents: "professional_details.patents",
   membershipUrl: "professional_details.membershipUrl",
+    scholarships: "financial_details.scholarships",
+  grants: "financial_details.grants",
 };
 
         const arrayPath = sectionMap[section];
