@@ -67,6 +67,7 @@ export const createProfileUpdateRequest = async (req, res) => {
 
 if (updateType === "full_profile") {
 
+  
   if (!profile.fullUnlockActive) {
     return res.status(400).json({
       success: false,

@@ -13,6 +13,7 @@ import profileUpdateRequestRoutes from "./routes/profileUpdateRequest.routes.mjs
 import dropdownRoutes from "./routes/dropdownRoutes.mjs";
 import dropdownRequestRouter from "./routes/dropdownRequest.routes.mjs";
 import notificationRouter from "./routes/notification.routes.mjs";
+import forgotPassword from "./routes/forgotPasswordRequest.routes.mjs";
 
 
 setInterval(
@@ -48,6 +49,7 @@ app.use("/api/profile-update-request",profileUpdateRequestRoutes);
 app.use("/api/dropdowns", dropdownRoutes);
 app.use("/api/dropdown-request",dropdownRequestRouter);
 app.use("/api/notifications",notificationRouter);
+app.use("/api/forgot-password-request", forgotPassword);
 app.use("/", searchRouter);
 
 

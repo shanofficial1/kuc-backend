@@ -122,18 +122,18 @@ export const login = async (req, res) => {
 
         // Success response
         return res.status(200).json({
-            success: true,
-            message: "Login successful",
-            token,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                canEdit: user.canEdit
-            }
-            
-        });
+  success: true,
+  message: "Login successful",
+  token,
+  user: {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    canEdit: user.canEdit,
+    mustChangePassword: user.mustChangePassword,
+  },
+});
 
     } catch (error) {
         return res.status(500).json({
@@ -168,13 +168,21 @@ export const ResetPassword = async (req, res) => {
             return res.status(400).json({ "message": "Password mismatch" });
         }
 
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-        user.password = hashedPassword;
+user.password = hashedPassword;
 
-        await user.save();
+// Password has been changed, so don't force it again
+user.mustChangePassword = false;
 
-        res.status(200).json({ "message": "success" });
+await user.save();
+
+return res.status(200).json({
+  success: true,
+  message: "Password changed successfully",
+  mustChangePassword: false,
+});
+
     } catch (error) {
         return res.status(500).json({ "message": "Internel server error" })
     }
@@ -211,12 +219,25 @@ export const changePassword = async (req, res) => {
             return res.status(400).json({ message: "Wrong password" });
         }
 
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
+       const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-        user.password = hashedPassword;
-        await user.save();
+user.password = hashedPassword;
 
-        return res.status(200).json({ message: "Password changed successfully" });
+// Password has been changed
+user.mustChangePassword = false;
+
+await user.save();
+
+// Verify it was saved
+const updatedUser = await Users.findById(user._id);
+
+console.log("mustChangePassword:", updatedUser.mustChangePassword);
+
+return res.status(200).json({
+    success: true,
+    message: "Password changed successfully",
+    mustChangePassword: updatedUser.mustChangePassword,
+});
     } catch (error) {
         return res.status(500).json({ message: "Internal server error", error: error.message });
     }

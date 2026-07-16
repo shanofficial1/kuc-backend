@@ -1,6 +1,7 @@
 import UnlockRequest from "../models/unlockRequest.mjs";
 import StudentProfile from "../models/studentProfile.mjs";
 import Users from "../models/users.mjs";
+import ProfileUpdateRequest from "../models/profileUpdateRequest.mjs";
 import { createNotification } from "../utils/createNotification.mjs";
 
 import {
@@ -419,11 +420,14 @@ export const rejectUnlockRequest = async (req, res) => {
 };
 
 
-
 export const getEligibility = async (req, res) => {
   try {
 
     const userId = req.user._id;
+
+    // =====================================
+    // PROFILE
+    // =====================================
 
     const profile = await StudentProfile.findOne({
       userId,
@@ -436,8 +440,31 @@ export const getEligibility = async (req, res) => {
       });
     }
 
+    // =====================================
+    // USER
+    // =====================================
+
     const user = await Users.findById(userId)
       .select("canEdit");
+
+    // =====================================
+    // CHECK PENDING PROFILE UPDATE REQUEST
+    // =====================================
+
+    const pendingProfileUpdate =
+      await ProfileUpdateRequest.findOne({
+
+        studentId: userId,
+
+        status: "pending",
+
+      });
+
+
+      console.log("Pending Profile:", pendingProfileUpdate);
+    // =====================================
+    // FIELD CORRECTION
+    // =====================================
 
     const maxSlots = 5;
 
@@ -445,18 +472,45 @@ export const getEligibility = async (req, res) => {
       profile.fieldCorrectionCount || 0;
 
     const availableSlots =
-      Math.max(0, maxSlots - pendingCorrections);
+      Math.max(
+        0,
+        maxSlots - pendingCorrections
+      );
 
+    // =====================================
+    // FULL UNLOCK ELIGIBILITY
+    // =====================================
+
+    const canRequestFullUnlock =
+      !profile.fullUnlockActive &&
+      !pendingProfileUpdate;
+
+    // =====================================
+    // RESPONSE
+    // =====================================
+console.log({
+  success: true,
+  fullUnlockActive: profile.fullUnlockActive,
+  canRequestFullUnlock,
+  pendingProfileUpdate,
+});
     return res.status(200).json({
 
       success: true,
 
       // Full Unlock
-      fullUnlockActive: profile.fullUnlockActive,
+      fullUnlockActive:
+        profile.fullUnlockActive,
 
-      canEdit: user?.canEdit || false,
+      canEdit:
+        user?.canEdit || false,
 
-      canRequestFullUnlock: !profile.fullUnlockActive,
+      canRequestFullUnlock,
+
+      hasPendingProfileUpdate:
+        !!pendingProfileUpdate,
+
+      pendingProfileUpdate,
 
       // Field Correction
       pendingCorrections,
@@ -475,8 +529,11 @@ export const getEligibility = async (req, res) => {
     console.error(err);
 
     return res.status(500).json({
+
       success: false,
+
       message: err.message,
+
     });
 
   }
