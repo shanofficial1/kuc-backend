@@ -159,6 +159,28 @@ const request = await ProfileUpdateRequest.create({
 
 });
 
+
+// =====================================
+// DISABLE EDITING AFTER FULL PROFILE SUBMISSION
+// =====================================
+
+if (updateType === "full_profile") {
+
+  // Lock profile again
+  profile.fullUnlockActive = false;
+
+  await profile.save();
+
+  // Disable editing
+  await Users.findByIdAndUpdate(
+    userId,
+    {
+      canEdit: false,
+    }
+  );
+
+}
+
     // =====================================
 // CREATE DROPDOWN REQUESTS
 // =====================================
