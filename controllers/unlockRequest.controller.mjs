@@ -65,17 +65,20 @@ console.log("canEdit:", user.canEdit);
     );
 
     // Create unlock request
-    const request = await UnlockRequest.create({
+   const request = await UnlockRequest.create({
 
-      studentId: userId,
+  studentId: userId,
 
-      requestNo: `UNLOCK-${Date.now()}`,
+  department:
+    profile.academic_details?.department || "",
 
-      reason,
+  requestNo: `UNLOCK-${Date.now()}`,
 
-      status: "pending",
+  reason,
 
-    });
+  status: "pending",
+
+});
 
     return res.status(201).json({
 
