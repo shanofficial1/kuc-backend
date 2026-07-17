@@ -44,7 +44,6 @@ router.get(
 // View Request Details
 router.get(
   "/:id",
-  authMiddleware,
   getProfileUpdateRequestById
 );
 
@@ -57,7 +56,6 @@ router.post(
 // Reject Profile Update Request
 router.post(
   "/:id/reject",
-  authMiddleware,
   rejectProfileUpdateRequest
 );
 
