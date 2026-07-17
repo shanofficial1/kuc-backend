@@ -102,7 +102,6 @@ studentProfileRouter.get(
 
 studentProfileRouter.get(
   "/requests/pending",
-  authMiddleware,
   getPendingRequests
 );
 

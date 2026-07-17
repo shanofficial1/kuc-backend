@@ -57,14 +57,12 @@ router.get(
 // View All Pending Unlock Requests
 router.get(
   "/pending",
-  authMiddleware,
   getPendingUnlockRequests
 );
 
 // View Unlock Request Details
 router.get(
   "/:id",
-  authMiddleware,
   getUnlockRequestById
 );
 
@@ -77,7 +75,6 @@ router.post(
 // Reject Unlock Request
 router.post(
   "/:id/reject",
-  authMiddleware,
   rejectUnlockRequest
 );
 
