@@ -286,10 +286,7 @@ console.log(
       disabilityCertificate:
         "health_details.disabilityCertificate",
 
-      vaccinationDoc:
-        "health_details.vaccinationDoc",
-        
-
+     
       migrationUrl:
         "education_details.migrationUrl",
 
@@ -321,6 +318,35 @@ console.log(
         "documents.legalCertificates.nativityCertificate"
     };
 
+    // =========================
+// ✅ VACCINATIONS ARRAY
+// =========================
+
+if (body.health_details?.vaccinations) {
+
+  const vaccinations =
+    body.health_details.vaccinations;
+
+  updateData["health_details.vaccinations"] =
+    vaccinations.map((vaccination, index) => ({
+
+      ...vaccination,
+
+      vaccinationDoc:
+        files.vaccinationDocs?.[index]
+          ? {
+              url: files.vaccinationDocs[index].path,
+              name: files.vaccinationDocs[index].originalname,
+            }
+          : vaccination.vaccinationDoc || {
+              name: "",
+              url: "",
+            },
+
+    }));
+
+}
+
 console.log("FILES =", files);
 console.log(
   "FELLOWSHIP =",
@@ -334,10 +360,10 @@ console.log("REQ FILES =", req.files);
     req.files?.disabilityCertificate
   );
 
-  console.log(
-    "VACCINATION =",
-    req.files?.vaccinationDoc
-  );
+console.log(
+  "VACCINATION FILES =",
+  files.vaccinationDocs
+);
 
   if (files[field]) {
 

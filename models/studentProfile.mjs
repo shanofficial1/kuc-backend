@@ -149,39 +149,83 @@ const studentProfileSchema = new mongoose.Schema(
       chronicConditions: { type: String },
       regularMedications: { type: String },
       insurance: { provider: String, policyNumber: String },
-      vaccinationStatus: { type: String },
-      vaccinationDoc: { url: String, name: String },
+      vaccinations: [
+  {
+    status: {
+      type: String,
+    },
+
+    vaccinationDoc: {
+      url: {
+        type: String,
+        default: "",
+      },
+      name: {
+        type: String,
+        default: "",
+      },
+    },
+  },
+],
     },
 
     family_details: {
-      father: { name: String, qualification: String, occupation: String },
-      mother: { name: String, qualification: String, occupation: String },
-      annualFamilyIncome: Number,
-      siblings: [
-        {
-          name: String,
-          educationStatus: String,
-          email: String,
-        },
-      ],
-      parentContact: { countryCode: String, number: String },
-      guardian: {
-        name: String,
-        relation: String,
-        contact: { countryCode: String, number: String },
-        address: {
-          addressLine: String,
-          city: String,
-          district: String,
-          state: String,
-          pinCode: String,
-        },
-      },
-      parentEmail: String,
-      guardianResidentialAddress: String,
-      guardianOfficeAddress: String,
+  father: {
+    name: String,
+    qualification: String,
+    occupation: String,
+    phone: {
+      countryCode: String,
+      number: String,
     },
+    email: String,
+  },
 
+  mother: {
+    name: String,
+    qualification: String,
+    occupation: String,
+    phone: {
+      countryCode: String,
+      number: String,
+    },
+    email: String,
+  },
+
+  annualFamilyIncome: Number,
+
+siblings: [
+  {
+    name: String,
+    gender: String,
+    educationStatus: String,
+    email: String,
+  },
+],
+
+  guardian: {
+  name: String,
+  relation: String,
+
+  contact: {
+    countryCode: String,
+    number: String,
+  },
+
+  email: String,
+
+  address: {
+    addressLine: String,
+    city: String,
+    district: String,
+    state: String,
+    pinCode: String,
+  },
+},
+
+  guardianResidentialAddress: String,
+  guardianOfficeAddress: String,
+},
 education_details: {
   education: [
     {
@@ -524,36 +568,96 @@ education_details: {
     },
 
     residential_details: {
-      resType: { type: String, enum: ["Day Scholar", "Hosteller"] },
-      hostel: { block: String, roomNo: String, bedType: String },
-      hostelDeclarationForm: String,
-      mess: { type: String, enum: ["Veg", "Non-Veg", "Special", "None"] },
-      transport: {
-        opted: { type: Boolean, default: false },
-        routeNumber: String,
-        boardingPoint: String,
-        passNumber: String,
+  resType: {
+    type: String,
+    enum: ["Day Scholar", "Hosteller", "Stay Outside"],
+  },
+
+  // Used when resType is "Stay Outside"
+  homeAddress: String,
+
+  hostel: {
+    block: String,
+    roomNo: String,
+    bedType: String,
+  },
+
+  hostelDeclarationForm: String,
+
+  mess: {
+    type: String,
+    enum: ["Veg", "Non-Veg", "Special", "None"],
+  },
+
+  transport: {
+    opted: {
+      type: Boolean,
+      default: false,
+    },
+    routeNumber: String,
+    boardingPoint: String,
+    passNumber: String,
+  },
+
+  vehicleReg: String,
+
+  documents: {
+    profilePhoto: {
+      url: String,
+      name: String,
+    },
+
+    signature: {
+      url: String,
+      name: String,
+    },
+
+    transcripts: [
+      {
+        url: String,
+        name: String,
       },
-      vehicleReg: String,
-      documents: {
-        profilePhoto: { url: String, name: String },
-        signature: { url: String, name: String },
-        transcripts: [{ url: String, name: String }],
-        identityProof: {
-          type: {
-            type: String,
-            enum: ["Aadhaar", "Passport", "Driving License", "Voter ID"],
-          },
-          document: { url: String, name: String },
-        },
-        legalCertificates: {
-          incomeCertificate: { url: String, name: String },
-          casteCertificate: { url: String, name: String },
-          nonCreamyLayerCertificate: { url: String, name: String },
-          nativityCertificate: { url: String, name: String },
-        },
+    ],
+
+    identityProof: {
+      type: {
+        type: String,
+        enum: [
+          "Aadhaar",
+          "Passport",
+          "Driving License",
+          "Voter ID",
+        ],
+      },
+      document: {
+        url: String,
+        name: String,
       },
     },
+
+    legalCertificates: {
+      incomeCertificate: {
+        url: String,
+        name: String,
+      },
+
+      casteCertificate: {
+        url: String,
+        name: String,
+      },
+
+      nonCreamyLayerCertificate: {
+        url: String,
+        name: String,
+      },
+
+      nativityCertificate: {
+        url: String,
+        name: String,
+      },
+    },
+  },
+},
 
     mentor_details: {
       hodName: String,

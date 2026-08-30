@@ -31,7 +31,7 @@ studentProfileRouter.post(
 
     // 📘 Health
     { name: "disabilityCertificate", maxCount: 1 },
-  { name: "vaccinationDoc", maxCount: 1 },
+  { name: "vaccinationDoc", maxCount: 10 },
     // 📘 Education
     { name: "educationDocuments", maxCount: 10 }, // for education[].documentUrl
     { name: "competitiveExamDocs", maxCount: 5 },
